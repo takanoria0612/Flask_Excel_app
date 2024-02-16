@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>七曲署売上集計アプリ</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/indexhtml.css') }}">
+</head>
+<body>
+    <div class="background-overlay">
+        <div class="page-container"> 
+            <h1>七曲署売上集計アプリ</h1> <a class="btn" href="/logout">ログアウト</a>
+
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        {% if category == "error_index" %}
+                            <div class="flash-message {{ category }}">{{ message }}</div>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        
+
+            <div class="totals-display">
+                <div>
+                    <p>今月の合計値段: <span>{{ total_price }}</span></p>
+                    <p>今月の仕入れ額: <span>{{ total_purchase }}</span></p>
+                </div>
+            </div>
+
+            <!-- History Form -->
+            <form action="/filter" method="get">
+                <label for="selectedMonth">月を選択する:</label>
+                <input type="month" id="selectedMonth" name="selectedMonth" {% if selected_month %}value="{{ selected_month }}" {% endif %}required>
+                <button type="submit" class="btn" {% if not file_exists %}disabled{% endif %}>参照</button>
+            </form>
+
+            {% if file_exists %}
+                <a class="btn" href="/add">売り上げ登録</a>
+            {% else %}
+                <button class="btn" disabled>売り上げ登録 (利用不可)</button>
+            {% endif %}
+            <a class='btn return-btn' href="/">今月の売り上げ</a>
+        </div>
+    </div>
+</body>
+</html>

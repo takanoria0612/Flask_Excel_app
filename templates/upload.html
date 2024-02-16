@@ -1,0 +1,45 @@
+<!doctype html>
+<html>
+<head>
+    <title>File Upload</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+</head>
+<body>
+    <h1>ファイルアップロード</h1>
+    <form action="/upload" method="post" enctype="multipart/form-data">
+        <input type="file" name="file"><br>
+        <br>
+        <input type="submit" value="アップロード">
+    </form>
+    <a class='btn return-btn' href="/">一覧に戻る</a>
+    
+
+</body>
+</html>
+<!doctype html>
+<html>
+<head>
+    <title>ファイルアップロード</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/upload.css') }}">
+</head>
+<body>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul class="flashes">
+          {% for message in messages %}
+            <li>{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+    <!-- <form action="/upload" method="post" enctype="multipart/form-data">
+        <input type="file" name="file"><br>
+        <br>
+        <input type="submit" value="アップロード">
+    </form>
+
+    <a class="btn btn-secondary" href="/">に戻る</a> -->
+</body>
+</html>

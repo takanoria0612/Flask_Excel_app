@@ -1,0 +1,130 @@
+/* 基本設定 */
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+}
+
+.background-overlay {
+    background-color: #f0f0f0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px; /* スマホ表示時の余白調整 */
+}
+
+.page-container {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    max-width: 100%;
+    overflow-x: auto; /* テーブルが幅を超える時スクロール可能に */
+}
+
+
+/* table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+table, th, td {
+    border: 1px solid #ddd;
+}
+
+th, td {
+    text-align: left;
+    padding: 8px;
+}
+
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+tr:hover {
+    background-color: #ddd;
+}
+
+th {
+    background-color: #007bff;
+    color: white;
+} */
+/* Modern styling for the totals display */
+.totals-display {
+    background-color: whitesmoke; /* Primary color background */
+    color: black; /* White text for contrast */
+    padding: 10px;
+    border-radius: 5px;
+    margin: 10px 0; /* Add some margin for spacing */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+    display: flex;
+    justify-content: space-between; /* Space out the label and value */
+    align-items: center;
+}
+
+.totals-display p {
+    margin: 0; /* Remove default paragraph margin */
+    font-weight: bold; /* Make the text bold */
+}
+.btn {
+    display: inline-block;
+    background-color: #007bff;
+    color: white;
+    padding: 8px 15px;
+    margin: 5px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.btn:hover {
+    background-color: #007bff;
+}
+
+/* レスポンシブデザイン */
+@media (max-width: 768px) {
+    body {
+        font-size: 14px;
+    }
+    .totals-display {
+        flex-direction: column; /* Stack label and value on smaller screens */
+        align-items: flex-start; /* Align to the start */
+    }
+
+    .totals-display p {
+        margin-bottom: 5px; /* Add margin to the bottom of the label */
+    }
+
+    .btn {
+        padding: 8px 16px;
+        font-size: 14px;
+    }
+
+
+}
+
+@media (max-width: 480px) {
+    .btn {
+        padding: 6px 12px;
+        font-size: 12px; /* 更に小さなデバイスでのボタンのサイズ調整 */
+    }
+
+    /* フォーム要素のスタイル調整 */
+    input[type="month"] {
+        font-size: 14px;
+        padding: 4px;
+        margin: 5px 0; /* スマホでの入力しやすさ向上 */
+    }
+}
+
+.flash-message.error {
+    color: red;
+    background-color: #ffdada;
+    border: 1px solid red;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+}

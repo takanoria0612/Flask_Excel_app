@@ -1,0 +1,7 @@
+Flask
+openpyxl
+gunicorn
+datetime
+flask-login
+requests
+python-dotenv

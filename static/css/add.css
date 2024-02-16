@@ -1,0 +1,199 @@
+.page-container {
+    max-width: 600px;
+    margin: auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.form-group label {
+    margin-right: 10px;
+    white-space: nowrap; /* ラベルが折り返さないように */
+}
+/* Default input styling for non-responsive mode */
+.full-length input, .half-length input, .short-input input {
+    text-align: right; /* Align text to the right */
+    /* Other existing styles */
+}
+.full-length input, .half-length input {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-left: 10px; /* ラベルと入力フィールドの間隔 */
+}
+
+.full-length input {
+    width: 70%; /* 長めの入力フィールド */
+}
+
+.half-length input {
+    width: 30%; /* 短めの入力フィールド */
+}
+
+.btn, .return-btn {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 20px;
+    text-decoration: none;
+}
+
+@media (max-width: 768px) {
+    .form-group {
+        display: block; /* flexを解除し、デフォルトのblockに設定 */
+    }
+
+    .form-group label,
+    .form-group input {
+        display: block; /* ラベルと入力フィールドをblock要素として扱う */
+        width: 100%;
+        text-align: right; /* テキストを右寄せ */
+        margin-bottom: 5px; /* 項目間のマージンを設定 */
+    }
+
+    .full-length input {
+        /* 長めの入力フィールドは、レスポンシブ時も幅を100%に */
+        width: 100%;
+        text-align: right; 
+    }
+
+    .half-length input {
+        /* 短めの入力フィールドは、レスポンシブ時も幅を100%に */
+        width: 100%;
+        text-align: right; 
+    }
+
+    .btn-container {
+        text-align: center; /* ボタンは中央揃えに */
+    }
+
+    .btn, .return-btn {
+        width: 100%; /* ボタンの幅を100%に */
+        margin-bottom: 10px; /* ボタン間のマージンを設定 */
+    }
+}
+@media (max-width: 414px) {
+    .page-container {
+        padding: 15px; /* Consistent padding around the form */
+        margin: 0 auto; /* Center the container */
+        box-shadow: none; /* Remove box-shadow for a flat design */
+        
+    }
+
+    .form-group {
+        display: flex; /* Use flexbox for layout */
+        align-items: center; /* Align items vertically */
+        margin-bottom: 15px; /* Space between form groups */
+    }
+
+    .form-group label {
+        width: 30%; /* Allocate width for the label */
+        min-width: 70px; /* Minimum width for the label */
+        margin-right: 10px; /* Space between label and input */
+        text-align: left; /* Align text to the left */
+    }
+
+    .form-group input {
+        width: 70%; /* Allocate remaining width for the input */
+        padding: 10px; /* Padding inside the input for aesthetics */
+        border: 1px solid #ccc; /* Subtle border for the input */
+        border-radius: 4px; /* Slightly rounded corners on the input */
+        text-align: right;
+    }
+
+    /* Adjustments for the shorter input fields */
+    .form-group.short-input label {
+        margin-left: 10%; /* Push the label to the right */
+        margin-right: 15px; /* Reduce space between label and input */
+        text-align: right; 
+    }
+
+    .form-group.short-input input {
+        width: calc(50% - 10px); /* Adjust width for the input */
+        text-align: right; /* Right align the text inside the input */
+    }
+
+    .btn, .return-btn {
+        display: block; /* Block display to fill width */
+        width: 80%; /* Full width for the button */
+        margin: 25px auto 0; /* Margin top and auto margin for centering */
+        padding: 12px 20px; /* Padding for a larger touch target */
+        font-size: 18px; /* Larger font size for readability */
+        border-radius: 4px; /* Rounded corners for the button */
+    }
+
+    .btn-container {
+        text-align: center; /* Center align the buttons */
+    }
+}
+
+@media (max-width: 430px) {
+    .page-container {
+        padding: 15px; /* Consistent padding around the form */
+        margin: 0 auto; /* Center the container */
+        box-shadow: none; /* Remove box-shadow for a flat design */
+    }
+
+    .form-group {
+        display: flex; /* Use flexbox for layout */
+        align-items: center; /* Align items vertically */
+        margin-bottom: 15px; /* Space between form groups */
+    }
+
+    .form-group label {
+        width: 30%; /* Allocate width for the label */
+        min-width: 70px; /* Minimum width for the label */
+        margin-right: 10px; /* Space between label and input */
+        text-align: left; /* Align text to the left */
+    }
+
+    .form-group input {
+        width: 70%; /* Allocate remaining width for the input */
+        padding: 10px; /* Padding inside the input for aesthetics */
+        border: 1px solid #ccc; /* Subtle border for the input */
+        border-radius: 4px; /* Slightly rounded corners on the input */
+        text-align: right;
+    }
+
+    /* Adjustments for the shorter input fields */
+    .form-group.short-input label {
+        margin-left: 20%; /* Push the label to the right */
+        margin-right: 5px; /* Reduce space between label and input */
+    }
+
+    .form-group.short-input input {
+        width: calc(50% - 10px); /* Adjust width for the input */
+        text-align: right; /* Right align the text inside the input */
+    }
+
+    .btn, .return-btn {
+        display: block; /* Block display to fill width */
+        width: 80%; /* Full width for the button */
+        margin: 25px auto 0; /* Margin top and auto margin for centering */
+        padding: 12px 20px; /* Padding for a larger touch target */
+        font-size: 18px; /* Larger font size for readability */
+        border-radius: 4px; /* Rounded corners for the button */
+    }
+
+    .btn-container {
+        text-align: center; /* Center align the buttons */
+    }
+}
+
+/* Custom CSS for error messages */
+.alert-error {
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    color: #721c24;
+}

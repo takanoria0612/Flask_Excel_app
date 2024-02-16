@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>七曲署売上集計アプリ</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/add.css') }}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script>
+        let holidays = {}; // 祝日データを格納するグローバル変数
+        // 祝日データをフェッチする関数
+        async function fetchHolidays() {
+            const response = await fetch('https://holidays-jp.github.io/api/v1/date.json');
+            if (!response.ok) {
+                throw new Error('Failed to fetch holidays');
+            }
+            holidays = await response.json();
+            console.log(holidays)
+        }
+        // 前営業日を計算する関数
+        function calculateLastBusinessDay(holidays) {
+            let date = new Date();
+            date.setDate(date.getDate() - 1); // 昨日に設定
+            const formatDate = (date) => date.toISOString().split('T')[0];
+
+            while (formatDate(date) in holidays || date.getDay() === 0 || date.getDay() === 6) {
+                date.setDate(date.getDate() - 1); // さらに1日遡る
+            }
+
+            return formatDate(date); // YYYY-MM-DD形式にフォーマット
+        }
+
+        // ページがロードされたときに実行される関数を定義
+        window.onload = async function() {
+            try {
+                await fetchHolidays(); // 祝日データをフェッチ
+                const businessDay = calculateLastBusinessDay(holidays);
+                console.log(businessDay)
+                document.getElementById('date').value = businessDay;
+
+                 // ここでサーバーにbusinessDayを送信
+                fetch('/set-business-day', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ businessDay: businessDay }),
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.status === 'success') {
+                        // フォームの値を更新する
+                        document.getElementById('sets').value = data.data.sets || '';
+                        document.getElementById('customers').value = data.data.customers || '';
+                        document.getElementById('bowls').value = data.data.bowls || '';document.getElementById('purchase_total').value = '';
+                        document.getElementById('purchase_total').value = data.data.purchase_total || '';
+                        document.getElementById('total_price').value = data.data.total_price || '';
+                        document.getElementById('cash_total').value = data.data.cash_total || '';
+                        document.getElementById('card_total').value = data.data.card_total || '';
+                        document.getElementById('usd_total').value = data.data.usd_total || '';
+                        document.getElementById('remarks').value = data.data.remarks || '';
+                        // document.getElementById('per_customer_price').value = data.data.perCustomerPrice || '';
+                    }
+                })
+
+
+            } catch (error) {
+            console.error('Error fetching or processing holidays:', error);
+                alert('祝日データの取得に失敗しました。');
+            }
+
+            // 土日、祝日選択時の処理を設定
+            document.getElementById('date').addEventListener('change', async function() {
+                var selectedDate = this.value;
+                var date = new Date(selectedDate);
+                var dayOfWeek = date.getDay();
+                // 土日の判定
+                if (dayOfWeek === 0 || dayOfWeek === 6) {
+                    alert('土、日は営業日ではありません。');
+                    clearFormData()
+                    setFormReadOnly(true);
+                } else if (holidays[selectedDate]) {
+                    alert('祝日なのでデータの追加ができません');
+                    clearFormData()
+                    setFormReadOnly(true);
+                } else {
+                    setFormReadOnly(false);
+                    try {
+                        const data = await fetch(`/fetch-data-for-date?date=${selectedDate}`).then(response => response.json());
+                        if (!data.exists) {
+                            // データが存在しない場合、フォームのフィールドをクリア
+                            clearFormData()
+                            alert('データがありません。');
+                        } else {
+                            // データが存在する場合、フォームのフィールドを更新
+                            document.getElementById('sets').value = data.sets || '';
+                            document.getElementById('customers').value = data.customers || '';
+                            document.getElementById('bowls').value = data.bowls || '';
+                            document.getElementById('purchase_total').value = data.purchase_total || '';
+                            document.getElementById('total_price').value = data.total_price || '';
+                            document.getElementById('cash_total').value = data.cash_total || '';
+                            document.getElementById('card_total').value = data.card_total || '';
+                            document.getElementById('usd_total').value = data.usd_total || '';
+                            document.getElementById('remarks').value = data.remarks || '';
+                            // document.getElementById('per_customer_price').value = data.perCustomerPrice || '';
+                        }
+
+                    
+                    } catch (error) {
+                        console.error('Error:', error);
+                    }
+                }
+            });
+
+            
+            // フォームのreadOnly状態を設定する関数
+            function setFormReadOnly(isReadOnly) {
+                const elements = document.querySelectorAll('#sets, #customers, #bowls, #purchase_total, #cash_total, #card_total, #usd_total, #remarks');
+                elements.forEach(element => {
+                    element.readOnly = isReadOnly;
+                });
+
+                // readOnlyの場合は送信ボタンを無効化
+                document.querySelector('input[type="submit"]').disabled = isReadOnly;
+            }
+
+            function clearFormData() {
+                document.getElementById('sets').value = '';
+                document.getElementById('customers').value = '';
+                document.getElementById('bowls').value = '';
+                document.getElementById('purchase_total').value = '';
+                document.getElementById('total_price').value = '';
+                document.getElementById('cash_total').value = '';
+                document.getElementById('card_total').value = '';
+                document.getElementById('usd_total').value = '';
+                document.getElementById('remarks').value = '';
+            }
+
+            function updateFinancials() {
+                var cashTotal = parseFloat(document.getElementById('cash_total').value) || 0;
+                var cardTotal = parseFloat(document.getElementById('card_total').value) || 0;
+                var usdTotal = parseFloat(document.getElementById('usd_total').value) || 0;
+                var customers = parseFloat(document.getElementById('customers').value) || 1; // 0で割ることを避ける
+
+                // 合計値段の計算
+                var total = cashTotal + cardTotal + usdTotal;
+                document.getElementById('total_price').value = total;
+
+                // 客あたり単価の計算
+                var perCustomerPrice = (total / customers).toFixed(2); // 小数点第二位までを保持
+                // document.getElementById('per_customer_price').value = perCustomerPrice;
+            }
+            // 合計値段と客数の変更を監視するイベントリスナー
+            document.getElementById('cash_total').addEventListener('input', updateFinancials);
+            document.getElementById('card_total').addEventListener('input', updateFinancials);
+            document.getElementById('usd_total').addEventListener('input', updateFinancials);
+            document.getElementById('customers').addEventListener('input', updateFinancials);
+
+            // フォームが送信されたときに合計値段を計算するイベントリスナー
+            document.querySelector('form').onsubmit = function(e) {
+                // calculateTotal();
+                updateFinancials();
+                // デフォルトのフォーム送信を停止したい場合は、e.preventDefault()を使用します
+                // e.preventDefault();
+            };
+        }
+    </script>
+</head>
+<body>
+    <div class="page-container">
+        <h1>新しい売り上げを追加する</h1>
+        <form action="/add" method="post">
+            <!-- 各フォームグループ -->
+            <div class="form-group full-length">
+                <label for="date">日付:</label>
+                <input type="date" id="date" name="date" required value="{{ form_data.get('date', yesterday) }}">
+            </div>
+            <div class="form-group full-length">
+                <label for="sets">組数:</label>
+                <input type="number" id="sets" name="sets" required min="0" step="1" value="{{ form_data['sets'][0] if form_data.get('sets') }}">
+            </div>
+            <div class="form-group full-length">
+                <label for="customers">客数:</label>
+                <input type="number" id="customers" name="customers" required min="0" step="1" value="{{ form_data['customers'][0] if form_data.get('customers') }}">
+            </div>
+            <div class="form-group full-length">
+                <label for="bowls">丼数:</label>
+                <input type="number" id="bowls" name="bowls" required min="0" step="1" value="{{ form_data['bowls'][0] if form_data.get('bowls') }}">
+            </div>
+            <div class="form-group full-length">
+                <label for="purchase_total">仕入れ額:</label>
+                <input type="number" id="purchase_total" name="purchase_total" required min="0" step="1" value="{{ form_data['purchase_total'][0] if form_data.get('purchase_total') }}">
+            </div>
+            <div class="form-group full-length">
+                <label for="total_price">合計値段:</label>
+                <input type="number" id="total_price" name="total_price" required readonly value="{{ form_data['total_price'][0] if form_data.get('total_price') }}">
+            </div>
+            <!-- 短めの項目 -->
+            <div class="form-group short-input">
+                <label for="cash_total">現金合計:</label>
+                <input type="number" id="cash_total" name="cash_total" required min="0" step="1" value="{{ form_data['cash_total'][0] if form_data.get('cash_total') }}">
+            </div>
+            <div class="form-group short-input">
+                <label for="card_total">カード合計:</label>
+                <input type="number" id="card_total" name="card_total" required min="0" step="1" value="{{ form_data['card_total'][0] if form_data.get('card_total') }}">
+            </div>
+            <div class="form-group short-input">
+                <label for="usd_total">USD負担合計:</label>
+                <input type="number" id="usd_total" name="usd_total" required min="0" step="1" value="{{ form_data['usd_total'][0] if form_data.get('usd_total') }}">
+            </div>
+            <!-- 客あたり単価表示用の領域
+            <div class="form-group full-length">
+                <label>客あたり単価:</label>
+                <input type="number" id="per_customer_price" name="per_customer_price" readonly value="{{ form_data.get('per_customer_price', '') }}">
+            </div> -->
+
+            <div class="form-group full-length">
+                <label for="remarks">備考欄:</label>
+                <textarea id="remarks" name="remarks" rows="4" class="form-control">{{ form_data.get('remarks', '') }}</textarea>
+            </div>
+            <!-- add.html 内の <form> タグ内に追加 -->
+            <input type="hidden" id="calculatedBusinessDay" name="calculatedBusinessDay" value="">
+
+            
+            <div class="btn-container">
+                <input type="submit" class="btn btn-primary" value="送信">
+                <a class="btn btn-secondary" href="/">戻る</a>
+            </div>
+        </form>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+    </div>
+</body>
+</html>
